@@ -1,0 +1,115 @@
+
+import java.util.Scanner;
+import java.util.Random;
+
+public class HangmanGame {
+    public static void main(String[] args) {
+
+        Scanner input = new Scanner(System.in);
+        Random random = new Random();
+
+        String[] words = {
+            "APPLE", "COMPUTER", "SCHOOL",
+            "JAVA", "NETWORK"
+        };
+
+        int index = random.nextInt(words.length);
+        String secretWord = words[index];
+
+        char[] guessedWord = new char[secretWord.length()];
+
+        for (int i = 0; i < guessedWord.length; i++) {
+            guessedWord[i] = '_';
+        }
+
+        int maxAttempts = 6;
+        int incorrectGuesses = 0;
+        boolean wordGuessed = false;
+
+        System.out.println("===== HANGMAN GAME =====");
+        System.out.println("Guess the word one letter at a time!");
+
+        while (incorrectGuesses < maxAttempts
+                && !wordGuessed) {
+
+            System.out.print("\nWord: ");
+
+            for (int i = 0; i < guessedWord.length; i++) {
+                System.out.print(guessedWord[i] + " ");
+            }
+
+            int remainingAttempts = Math.max(
+                0, maxAttempts - incorrectGuesses
+            );
+
+            System.out.printf(
+                "\nAttempts remaining: %d\n",
+                remainingAttempts
+            );
+
+            System.out.print("Enter a letter: ");
+            String guess = input.next().toUpperCase();
+
+            if (guess.length() != 1
+                    || !Character.isLetter(guess.charAt(0))) {
+                System.out.println("Please enter one letter.");
+                continue;
+            }
+
+            char letter = guess.charAt(0);
+            boolean correctGuess = false;
+
+            for (int i = 0; i < secretWord.length(); i++) {
+                if (secretWord.charAt(i) == letter) {
+                    guessedWord[i] = letter;
+                    correctGuess = true;
+                }
+            }
+
+            if (correctGuess) {
+                System.out.println("Correct guess!");
+            } else {
+                incorrectGuesses++;
+                System.out.println("Incorrect guess!");
+            }
+
+            wordGuessed = true;
+
+            for (int i = 0; i < guessedWord.length; i++) {
+                if (guessedWord[i] == '_') {
+                    wordGuessed = false;
+                    break;
+                }
+            }
+
+            int hiddenLetters = 0;
+
+            for (int i = 0; i < guessedWord.length; i++) {
+                if (guessedWord[i] == '_') {
+                    hiddenLetters++;
+                }
+            }
+
+            double progress = 100.0
+                * (secretWord.length() - hiddenLetters)
+                / secretWord.length();
+
+            System.out.printf("Word completed: %.0f%%\n", progress);
+        }
+
+        if (wordGuessed) {
+            System.out.println(
+                "\nCongratulations! You guessed the word!"
+            );
+        } else {
+            System.out.println(
+                "\nGame over! You ran out of attempts."
+            );
+        }
+
+        System.out.println("The secret word was: "
+            + secretWord.substring(0, secretWord.length()));
+
+        input.close();
+    }
+}
